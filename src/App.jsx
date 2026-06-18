@@ -32,6 +32,10 @@ const PROJECT_TWO_DETAIL_HASH = '#project-02'
 const PRODUCT_VIDEO_REFERENCE_DURATION = 34.667
 const IGNIFIER_FRAME_COUNT = 240
 const IGNIFIER_FRAME_BASE = '/ignifier-sequence'
+const IGNIFIER_SCROLL_VIDEO_SOURCES = [
+  { src: '/assets/ignifier-scroll.webm', type: 'video/webm' },
+  { src: '/assets/ignifier-scroll-compressed.mp4', type: 'video/mp4' },
+]
 const PROJECT_TWO_HEAD_ASSET_BASE = '/project-02/head-follow'
 const PROJECT_TWO_STORY_ASSET_BASE = '/project-02/story'
 const PROJECT_TWO_MOTION_ASSET_BASE = '/project-02/motion-demo'
@@ -1503,6 +1507,19 @@ function ProjectDetail({ onBack }) {
           className="productScrollCanvas"
           aria-label="IGNIFIER 原野产品展开滚动动画"
         />
+
+        <video
+          className="productScrollFallbackVideo"
+          preload="metadata"
+          muted
+          playsInline
+          aria-hidden="true"
+          tabIndex={-1}
+        >
+          {IGNIFIER_SCROLL_VIDEO_SOURCES.map((source) => (
+            <source key={source.type} src={source.src} type={source.type} />
+          ))}
+        </video>
 
         <div className="productScrollVignette" aria-hidden="true" />
 

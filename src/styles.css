@@ -1678,6 +1678,10 @@ main > section {
   display: block;
 }
 
+.productScrollFallbackVideo {
+  display: none;
+}
+
 .productScrollVignette {
   position: absolute;
   inset: 0;
