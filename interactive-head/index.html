@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e4e4e1">
+  <link rel="icon" href="data:,">
+  <title>Interactive Head Direction</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page-bg: #e2e2df;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: var(--page-bg);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(94vw, 1120px);
+      aspect-ratio: 16 / 9;
+      line-height: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .stage img,
+    .stage canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .stage img {
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    canvas {
+      image-rendering: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Interactive product head">
+    <img id="poster" src="frame_front.webp" alt="">
+    <canvas id="product" width="960" height="540"></canvas>
+  </main>
+
+  <script>
+    const SPRITE_URL = "sprite.webp";
+    const FRAME_W = 960;
+    const FRAME_H = 540;
+    const SPRITE_COLUMNS = 12;
+    const INTRO_FRAME_COUNT = 60;
+    const INTRO_DURATION_MS = 2000;
+    const FRONT_SPRITE_INDEX = 30;
+    const LOOK_FRAME_START = 60;
+    const LOOK_FRAME_COUNT = 144;
+    const MOUSE_SMOOTHING = 0.12;
+    const LOOK_SMOOTHING = 0.18;
+    const STRENGTH_SMOOTHING = 0.16;
+    const MAX_LOOK_STEP = 3.5;
+    const MAX_STRENGTH_STEP = 0.055;
+    const FRONT_RETURN_THRESHOLD = 0.045;
+
+    const LOOK_VIDEO_FRAMES = [
+      150,153,157,160,163,167,170,173,177,180,183,187,190,193,197,200,203,207,
+      210,215,220,225,230,235,240,245,250,255,260,265,270,275,280,285,290,295,
+      300,305,310,315,320,325,330,335,340,345,350,355,360,365,370,375,380,385,
+      390,395,400,405,410,415,420,425,430,435,440,445,450,455,460,465,470,475,
+      480,482,483,485,487,488,490,492,493,495,497,498,500,502,503,505,507,508,
+      510,512,513,515,517,518,520,522,523,525,527,528,530,532,533,535,537,538,
+      540,543,547,550,553,557,560,563,567,570,573,577,580,583,587,590,593,597,
+      600,603,606,608,611,614,617,619,622,625,628,631,633,636,639,642,644,647
+    ];
+
+    const ANGLE_KEYS = [
+      { name: "right", angle: 0, frame: 480, lookFrame: 72 },
+      { name: "rightDown", angle: 45, frame: 510, lookFrame: 90 },
+      { name: "down", angle: 90, frame: 540, lookFrame: 108 },
+      { name: "leftDown", angle: 135, frame: 600, lookFrame: 126 },
+      { name: "left", angle: 180, frame: 150, lookFrame: 0 },
+      { name: "leftUp", angle: -135, frame: 210, lookFrame: 18 },
+      { name: "up", angle: -90, frame: 300, lookFrame: 36 },
+      { name: "rightUp", angle: -45, frame: 390, lookFrame: 54 },
+      { name: "front", angle: null, frame: 30, lookFrame: null }
+    ];
+
+    const ANGLE_ANCHORS = [
+      { name: "left", angle: -180, frame: 150, lookFrame: 0 },
+      { name: "leftUp", angle: -135, frame: 210, lookFrame: 18 },
+      { name: "up", angle: -90, frame: 300, lookFrame: 36 },
+      { name: "rightUp", angle: -45, frame: 390, lookFrame: 54 },
+      { name: "right", angle: 0, frame: 480, lookFrame: 72 },
+      { name: "rightDown", angle: 45, frame: 510, lookFrame: 90 },
+      { name: "down", angle: 90, frame: 540, lookFrame: 108 },
+      { name: "leftDown", angle: 135, frame: 600, lookFrame: 126 },
+      { name: "left", angle: 180, frame: 150, lookFrame: LOOK_FRAME_COUNT }
+    ];
+
+    const canvas = document.getElementById("product");
+    const poster = document.getElementById("poster");
+    const ctx = canvas.getContext("2d", { alpha: false });
+
+    let spriteBitmap = null;
+    let centerX = window.innerWidth / 2;
+    let centerY = window.innerHeight / 2;
+    let targetMouseX = centerX;
+    let targetMouseY = centerY;
+    let smoothMouseX = centerX;
+    let smoothMouseY = centerY;
+    let currentFrame = 72;
+    let targetFrame = 72;
+    let currentStrength = 0;
+    let targetStrength = 0;
+    let phase = "loading";
+    let introStartTime = 0;
+    let rafId = 0;
+    let lastRenderedFrame = -1;
+
+    window.__ANGLE_KEYS = ANGLE_KEYS;
+    window.__lookState = {
+      name: "front",
+      frame: 30,
+      spriteIndex: FRONT_SPRITE_INDEX,
+      phase
+    };
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function wrapLookFrame(value) {
+      return ((value % LOOK_FRAME_COUNT) + LOOK_FRAME_COUNT) % LOOK_FRAME_COUNT;
+    }
+
+    function cyclicDiff(target, current) {
+      return ((target - current + LOOK_FRAME_COUNT * 1.5) % LOOK_FRAME_COUNT) - LOOK_FRAME_COUNT / 2;
+    }
+
+    function updateCenter() {
+      centerX = window.innerWidth / 2;
+      centerY = window.innerHeight / 2;
+    }
+
+    function maxRadius() {
+      return Math.max(220, Math.min(window.innerWidth, window.innerHeight) * 0.46);
+    }
+
+    function renderFrame(spriteIndex) {
+      if (spriteIndex === lastRenderedFrame) return;
+      lastRenderedFrame = spriteIndex;
+
+      const col = spriteIndex % SPRITE_COLUMNS;
+      const row = Math.floor(spriteIndex / SPRITE_COLUMNS);
+      const sx = col * FRAME_W;
+      const sy = row * FRAME_H;
+
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = "copy";
+      ctx.drawImage(spriteBitmap, sx, sy, FRAME_W, FRAME_H, 0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.restore();
+    }
+
+    function nearestAnchorName(lookFrame) {
+      let best = ANGLE_KEYS[0];
+      let bestDistance = Infinity;
+      for (const key of ANGLE_KEYS) {
+        if (key.lookFrame === null) continue;
+        const distance = Math.abs(cyclicDiff(key.lookFrame, lookFrame));
+        if (distance < bestDistance) {
+          best = key;
+          bestDistance = distance;
+        }
+      }
+      return best.name;
+    }
+
+    function lookFrameFromAngle(angle) {
+      const normalized = angle <= -180 ? -180 : angle >= 180 ? 180 : angle;
+      for (let i = 0; i < ANGLE_ANCHORS.length - 1; i += 1) {
+        const start = ANGLE_ANCHORS[i];
+        const end = ANGLE_ANCHORS[i + 1];
+        if (normalized >= start.angle && normalized <= end.angle) {
+          const t = (normalized - start.angle) / (end.angle - start.angle);
+          return wrapLookFrame(lerp(start.lookFrame, end.lookFrame, t));
+        }
+      }
+      return 72;
+    }
+
+    function computePointerTarget() {
+      const dx = smoothMouseX - centerX;
+      const dy = smoothMouseY - centerY;
+      const distance = Math.hypot(dx, dy);
+      const strength = clamp(distance / maxRadius(), 0, 1);
+
+      if (strength < 0.012) {
+        return { lookFrame: currentFrame, strength: 0, angle: null };
+      }
+
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      return { lookFrame: lookFrameFromAngle(angle), strength, angle };
+    }
+
+    function renderIntroFrame(frame) {
+      renderFrame(frame);
+      window.__lookState = { name: "intro", frame, spriteIndex: frame, phase };
+      document.documentElement.dataset.look = "intro";
+      document.documentElement.dataset.videoFrame = String(frame);
+    }
+
+    function renderLookFrame() {
+      let spriteIndex = FRONT_SPRITE_INDEX;
+      let videoFrame = 30;
+      let renderedLookFrame = null;
+      let name = "front";
+
+      if (currentStrength >= FRONT_RETURN_THRESHOLD) {
+        renderedLookFrame = Math.round(wrapLookFrame(currentFrame)) % LOOK_FRAME_COUNT;
+        spriteIndex = LOOK_FRAME_START + renderedLookFrame;
+        videoFrame = LOOK_VIDEO_FRAMES[renderedLookFrame];
+        name = nearestAnchorName(currentFrame);
+      }
+
+      renderFrame(spriteIndex);
+      window.__lookState = {
+        name,
+        frame: videoFrame,
+        lookFrame: currentFrame,
+        renderedLookFrame,
+        spriteIndex,
+        strength: currentStrength,
+        targetStrength,
+        targetFrame,
+        currentFrame,
+        phase
+      };
+      document.documentElement.dataset.look = name;
+      document.documentElement.dataset.videoFrame = String(videoFrame);
+    }
+
+    function advanceInteractiveState() {
+      smoothMouseX += (targetMouseX - smoothMouseX) * MOUSE_SMOOTHING;
+      smoothMouseY += (targetMouseY - smoothMouseY) * MOUSE_SMOOTHING;
+
+      const target = computePointerTarget();
+      targetFrame = target.lookFrame;
+      targetStrength = target.strength;
+
+      const frameDiff = cyclicDiff(targetFrame, currentFrame);
+      currentFrame = wrapLookFrame(
+        currentFrame + clamp(frameDiff * LOOK_SMOOTHING, -MAX_LOOK_STEP, MAX_LOOK_STEP)
+      );
+
+      const strengthDiff = targetStrength - currentStrength;
+      currentStrength = clamp(
+        currentStrength + clamp(strengthDiff * STRENGTH_SMOOTHING, -MAX_STRENGTH_STEP, MAX_STRENGTH_STEP),
+        0,
+        1
+      );
+
+      if (currentStrength < 0.002 && targetStrength === 0) {
+        currentStrength = 0;
+      }
+
+      renderLookFrame();
+    }
+
+    function animate(now) {
+      if (phase === "intro") {
+        const elapsed = now - introStartTime;
+        const introFrame = Math.min(
+          INTRO_FRAME_COUNT - 1,
+          Math.floor((elapsed / INTRO_DURATION_MS) * INTRO_FRAME_COUNT)
+        );
+        renderIntroFrame(introFrame);
+
+        if (elapsed >= INTRO_DURATION_MS) {
+          const target = computePointerTarget();
+          currentFrame = target.lookFrame;
+          targetFrame = target.lookFrame;
+          currentStrength = 0;
+          targetStrength = target.strength;
+          phase = "interactive";
+          lastRenderedFrame = -1;
+          renderLookFrame();
+        }
+      } else if (phase === "interactive") {
+        advanceInteractiveState();
+      }
+
+      rafId = requestAnimationFrame(animate);
+    }
+
+    async function loadSprite() {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = SPRITE_URL;
+      await image.decode();
+      spriteBitmap = "createImageBitmap" in window ? await createImageBitmap(image) : image;
+      renderFrame(FRONT_SPRITE_INDEX);
+      poster.remove();
+      phase = "intro";
+      introStartTime = performance.now();
+      rafId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("mousemove", (event) => {
+      targetMouseX = event.clientX;
+      targetMouseY = event.clientY;
+    }, { passive: true });
+
+    window.addEventListener("resize", updateCenter, { passive: true });
+
+    window.addEventListener("beforeunload", () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    });
+
+    loadSprite().catch((error) => {
+      console.error(error);
+      phase = "error";
+    });
+  </script>
+</body>
+</html>

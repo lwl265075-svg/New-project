@@ -1,0 +1,88 @@
+.borderGlowCard {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --border-radius: 0px;
+  --glow-size: 420px;
+  --fill-opacity: 0.12;
+
+  position: relative;
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(239, 229, 218, 0.16);
+  border-radius: var(--border-radius);
+  background: var(--card-bg, #181512);
+  isolation: isolate;
+  contain: paint;
+  transform: translate3d(0, 0, 0);
+}
+
+.borderGlowCard::before,
+.borderGlowCard::after,
+.borderGlowCard > .edgeLight {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease-out;
+}
+
+.borderGlowCard::before {
+  z-index: 0;
+  background:
+    radial-gradient(
+      var(--glow-size) circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      var(--glow-fill-color, hsl(18deg 95% 58% / 0.16)),
+      transparent 46%
+    );
+  will-change: opacity;
+}
+
+.borderGlowCard::after {
+  z-index: 1;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 0 0 1px var(--glow-edge-color, hsl(18deg 95% 58% / 0.12));
+  will-change: opacity;
+}
+
+.borderGlowCard > .edgeLight {
+  z-index: 1;
+  background:
+    radial-gradient(
+      320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      var(--glow-border-color, hsl(18deg 95% 58% / 0.36)),
+      transparent 58%
+    );
+  opacity: 0;
+  will-change: opacity;
+}
+
+.borderGlowCard[data-glow-active="true"]::before,
+.borderGlowCard:hover::before,
+.borderGlowCard.sweep-active::before {
+  opacity: calc(var(--fill-opacity, 0.12) * 2.4);
+}
+
+.borderGlowCard[data-glow-active="true"]::after,
+.borderGlowCard:hover::after,
+.borderGlowCard.sweep-active::after {
+  opacity: 0.58;
+}
+
+.borderGlowCard[data-glow-active="true"] > .edgeLight,
+.borderGlowCard:hover > .edgeLight,
+.borderGlowCard.sweep-active > .edgeLight {
+  opacity: 0.24;
+}
+
+.borderGlowInner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100%;
+}

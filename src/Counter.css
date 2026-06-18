@@ -1,0 +1,49 @@
+.counter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--counter-gap);
+  color: var(--counter-color);
+  font-size: var(--counter-font-size);
+  font-weight: var(--counter-font-weight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.counter-digit {
+  position: relative;
+  display: inline-block;
+  width: 0.62em;
+  overflow: hidden;
+}
+
+.counter-number {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  line-height: 1;
+  will-change: transform;
+}
+
+.counter-gradient {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  width: 100%;
+  height: var(--counter-gradient-height);
+  pointer-events: none;
+}
+
+.counter-gradient-top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--counter-gradient-from), var(--counter-gradient-to));
+}
+
+.counter-gradient-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--counter-gradient-from), var(--counter-gradient-to));
+}
