@@ -39,6 +39,26 @@ const IGNIFIER_SCROLL_VIDEO_SOURCES = [
 const PROJECT_TWO_HEAD_ASSET_BASE = '/project-02/head-follow'
 const PROJECT_TWO_STORY_ASSET_BASE = '/project-02/story'
 const PROJECT_TWO_MOTION_ASSET_BASE = '/project-02/motion-demo'
+const MOBILE_EXPERIENCE_QUERY = '(max-width: 768px), (pointer: coarse)'
+
+const getMobileExperience = () => (
+  typeof window !== 'undefined' && window.matchMedia(MOBILE_EXPERIENCE_QUERY).matches
+)
+
+function useMobileExperience() {
+  const [isMobileExperience, setIsMobileExperience] = useState(getMobileExperience)
+
+  useEffect(() => {
+    const media = window.matchMedia(MOBILE_EXPERIENCE_QUERY)
+    const sync = () => setIsMobileExperience(media.matches)
+
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
+
+  return isMobileExperience
+}
 
 const projectDetailOverlays = [
   {
@@ -281,6 +301,8 @@ function HomeMotion({ rootRef }) {
       return undefined
     }
 
+    const isMobileMotion = getMobileExperience()
+
     const ctx = gsap.context(() => {
       const hero = root.querySelector('.js-page-intro')
       const selectedWorks = root.querySelector('.js-selected-works')
@@ -301,7 +323,7 @@ function HomeMotion({ rootRef }) {
         if (navItems.length) {
           intro.fromTo(
             navItems,
-            { y: -24, autoAlpha: 0 },
+            { y: isMobileMotion ? -12 : -24, autoAlpha: 0 },
             {
               y: 0,
               autoAlpha: 1,
@@ -316,10 +338,10 @@ function HomeMotion({ rootRef }) {
           intro.fromTo(
             title,
             {
-              y: 118,
-              scaleY: 0.78,
+              y: isMobileMotion ? 42 : 118,
+              scaleY: isMobileMotion ? 0.92 : 0.78,
               autoAlpha: 0,
-              clipPath: 'inset(0 0 100% 0)',
+              clipPath: isMobileMotion ? 'inset(0 0 40% 0)' : 'inset(0 0 100% 0)',
               transformOrigin: 'left bottom',
             },
             {
@@ -338,7 +360,7 @@ function HomeMotion({ rootRef }) {
         if (portrait) {
           intro.fromTo(
             portrait,
-            { y: 86, scale: 0.94, autoAlpha: 0 },
+            { y: isMobileMotion ? 28 : 86, scale: isMobileMotion ? 0.985 : 0.94, autoAlpha: 0 },
             {
               y: 0,
               scale: 1,
@@ -354,7 +376,7 @@ function HomeMotion({ rootRef }) {
         if (infoItems.length) {
           intro.fromTo(
             infoItems,
-            { y: 42, autoAlpha: 0 },
+            { y: isMobileMotion ? 16 : 42, autoAlpha: 0 },
             {
               y: 0,
               autoAlpha: 1,
@@ -369,7 +391,7 @@ function HomeMotion({ rootRef }) {
         if (counter || ornament) {
           intro.fromTo(
             [counter, ornament].filter(Boolean),
-            { y: 24, autoAlpha: 0 },
+            { y: isMobileMotion ? 12 : 24, autoAlpha: 0 },
             {
               y: 0,
               autoAlpha: 1,
@@ -381,7 +403,7 @@ function HomeMotion({ rootRef }) {
           )
         }
 
-        if (portrait) {
+        if (portrait && !isMobileMotion) {
           gsap.to(portrait, {
             yPercent: 3.5,
             ease: 'none',
@@ -418,7 +440,13 @@ function HomeMotion({ rootRef }) {
         if (kicker) {
           worksTimeline.fromTo(
             kicker,
-            { y: 72, scaleY: 0.82, autoAlpha: 0, clipPath: 'inset(0 0 100% 0)', transformOrigin: 'left bottom' },
+            {
+              y: isMobileMotion ? 24 : 72,
+              scaleY: isMobileMotion ? 0.94 : 0.82,
+              autoAlpha: 0,
+              clipPath: isMobileMotion ? 'inset(0 0 36% 0)' : 'inset(0 0 100% 0)',
+              transformOrigin: 'left bottom',
+            },
             {
               y: 0,
               scaleY: 1,
@@ -433,7 +461,13 @@ function HomeMotion({ rootRef }) {
         if (title) {
           worksTimeline.fromTo(
             title,
-            { y: 124, scaleY: 0.8, autoAlpha: 0, clipPath: 'inset(0 0 100% 0)', transformOrigin: 'left bottom' },
+            {
+              y: isMobileMotion ? 36 : 124,
+              scaleY: isMobileMotion ? 0.94 : 0.8,
+              autoAlpha: 0,
+              clipPath: isMobileMotion ? 'inset(0 0 36% 0)' : 'inset(0 0 100% 0)',
+              transformOrigin: 'left bottom',
+            },
             {
               y: 0,
               scaleY: 1,
@@ -450,7 +484,7 @@ function HomeMotion({ rootRef }) {
         if (copy) {
           worksTimeline.fromTo(
             copy,
-            { y: 34, autoAlpha: 0 },
+            { y: isMobileMotion ? 14 : 34, autoAlpha: 0 },
             { y: 0, autoAlpha: 1, duration: 0.82, clearProps: 'transform,opacity,visibility' },
             '-=0.68',
           )
@@ -459,7 +493,7 @@ function HomeMotion({ rootRef }) {
         if (cards.length) {
           worksTimeline.fromTo(
             cards,
-            { y: 92, scale: 0.94, autoAlpha: 0 },
+            { y: isMobileMotion ? 28 : 92, scale: isMobileMotion ? 0.985 : 0.94, autoAlpha: 0 },
             {
               y: 0,
               scale: 1,
@@ -914,6 +948,8 @@ function ProjectDetailMotion({ rootRef, projectId }) {
       return undefined
     }
 
+    const isMobileMotion = getMobileExperience()
+
     const ctx = gsap.context(() => {
       if (projectId === 'project-01') {
         const story = root.querySelector('.productScrollStory')
@@ -1007,7 +1043,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           if (backButton || topLine) {
             heroTimeline.fromTo(
               [backButton, topLine].filter(Boolean),
-              { y: -26, autoAlpha: 0 },
+              { y: isMobileMotion ? -12 : -26, autoAlpha: 0 },
               {
                 y: 0,
                 autoAlpha: 1,
@@ -1021,7 +1057,13 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           if (title) {
             heroTimeline.fromTo(
               title,
-              { y: 112, scaleY: 0.78, autoAlpha: 0, clipPath: 'inset(0 0 100% 0)', transformOrigin: 'center bottom' },
+              {
+                y: isMobileMotion ? 38 : 112,
+                scaleY: isMobileMotion ? 0.94 : 0.78,
+                autoAlpha: 0,
+                clipPath: isMobileMotion ? 'inset(0 0 36% 0)' : 'inset(0 0 100% 0)',
+                transformOrigin: 'center bottom',
+              },
               {
                 y: 0,
                 scaleY: 1,
@@ -1038,7 +1080,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           if (subcopy.length) {
             heroTimeline.fromTo(
               subcopy,
-              { y: 34, autoAlpha: 0 },
+              { y: isMobileMotion ? 14 : 34, autoAlpha: 0 },
               {
                 y: 0,
                 autoAlpha: 1,
@@ -1053,7 +1095,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           if (product) {
             heroTimeline.fromTo(
               product,
-              { y: 82, scale: 0.945, autoAlpha: 0 },
+              { y: isMobileMotion ? 24 : 82, scale: isMobileMotion ? 0.985 : 0.945, autoAlpha: 0 },
               {
                 y: 0,
                 scale: 1,
@@ -1069,7 +1111,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           if (actionItems.length) {
             heroTimeline.fromTo(
               actionItems,
-              { y: 30, autoAlpha: 0 },
+              { y: isMobileMotion ? 12 : 30, autoAlpha: 0 },
               {
                 y: 0,
                 autoAlpha: 1,
@@ -1083,7 +1125,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           }
         }
 
-        const story = root.querySelector('#project-02-story')
+        const story = !isMobileMotion ? root.querySelector('#project-02-story') : null
         if (story) {
           const meta = story.querySelector('.projectTwoStoryMetaRail')
           const stage = story.querySelector('.projectTwoStoryStage')
@@ -1146,7 +1188,7 @@ function ProjectDetailMotion({ rootRef, projectId }) {
           }
         }
 
-        const motionDemo = root.querySelector('#project-02-motion-demo')
+        const motionDemo = !isMobileMotion ? root.querySelector('#project-02-motion-demo') : null
         if (motionDemo) {
           const meta = motionDemo.querySelector('.projectTwoMotionMeta')
           const frame = motionDemo.querySelector('.projectTwoMotionFrame')
@@ -2088,12 +2130,15 @@ function ProjectTwoScrollStoryLegacy() {
 function ProjectTwoScrollStory() {
   const sectionRef = useRef(null)
   const frameRef = useRef(0)
+  const isMobileStory = useMobileExperience()
   const [progress, setProgress] = useState(0)
   const [slideTravelPx, setSlideTravelPx] = useState(null)
   const pageScrollStepVh = 74
   const slideGapPx = 44
 
   useEffect(() => {
+    if (isMobileStory) return undefined
+
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 
     const measureSlideTravel = () => {
@@ -2147,13 +2192,33 @@ function ProjectTwoScrollStory() {
       window.removeEventListener('scroll', scheduleProgress)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [isMobileStory])
 
   const pageCount = projectTwoStoryPages.length
   const pageFloat = progress * (pageCount - 1)
   const activeIndex = Math.max(0, Math.min(pageCount - 1, Math.round(pageFloat)))
   const progressPercent = Math.round(progress * 100)
   const activePage = projectTwoStoryPages[activeIndex]
+
+  if (isMobileStory) {
+    return (
+      <section className="projectTwoScrollStory projectTwoScrollStory--mobile" id="project-02-story">
+        <div className="projectTwoMobilePdfList" aria-label="Project 02 PDF pages">
+          {projectTwoStoryPages.map((page) => (
+            <article key={page.asset} className="projectTwoMobilePdfPage">
+              <div className="projectTwoMobilePdfMeta">
+                <span>PROJECT 02</span>
+                <strong>GLIDE-轻伴</strong>
+                <small>{page.number} / {String(pageCount).padStart(2, '0')}</small>
+                <h2>{page.title}</h2>
+              </div>
+              <img className="projectTwoPdfPageImage" src={page.asset} alt={`${page.title} PDF page`} loading="lazy" />
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   const pageStyle = (index) => {
     const distance = index - pageFloat
@@ -2241,6 +2306,7 @@ function ProjectTwoMotionDemo() {
   const sectionRef = useRef(null)
   const videoRef = useRef(null)
   const frameRef = useRef(0)
+  const isMobileMotionDemo = useMobileExperience()
   const progressRef = useRef(0)
   const targetTimeRef = useRef(0)
   const currentTimeRef = useRef(0)
@@ -2248,6 +2314,8 @@ function ProjectTwoMotionDemo() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    if (isMobileMotionDemo) return undefined
+
     const section = sectionRef.current
     const video = videoRef.current
     if (!section || !video) return undefined
@@ -2348,9 +2416,45 @@ function ProjectTwoMotionDemo() {
       window.removeEventListener('scroll', requestProgressMeasure)
       window.removeEventListener('resize', requestProgressMeasure)
     }
-  }, [])
+  }, [isMobileMotionDemo])
 
   const progressPercent = Math.round(progress * 100)
+
+  if (isMobileMotionDemo) {
+    return (
+      <section
+        ref={sectionRef}
+        className="projectTwoMotionDemo projectTwoMotionDemo--mobile"
+        id="project-02-motion-demo"
+      >
+        <div className="projectTwoMotionSticky">
+          <div className="projectTwoMotionMeta">
+            <span>PROJECT 02</span>
+            <strong>动态演示</strong>
+            <h2>Motion Demo</h2>
+            <p>Scroll-Controlled Product Motion</p>
+            <small>通过滚轮控制产品动态进度，展示 Glide-轻伴在场景中的连续运动与交互反馈。</small>
+          </div>
+
+          <div className="projectTwoMotionFrame">
+            <div className="projectTwoMotionVideoCrop">
+              <video
+                className="projectTwoMotionVideo"
+                src={`${PROJECT_TWO_MOTION_ASSET_BASE}/glide-motion-demo.mp4`}
+                muted
+                playsInline
+                loop
+                autoPlay
+                controls
+                preload="metadata"
+                aria-label="GLIDE Companion motion demo"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section
@@ -2448,6 +2552,7 @@ function ProjectTwoHeadFollow() {
 
     const canvas = canvasRef.current
     if (!canvas) return undefined
+    if (getMobileExperience()) return undefined
 
     const ctx = canvas.getContext('2d', { alpha: false })
     let spriteBitmap = null

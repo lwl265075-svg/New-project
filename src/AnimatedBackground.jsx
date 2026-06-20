@@ -9,6 +9,7 @@ export default function AnimatedBackground() {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d', { alpha: true })
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const coarsePointer = window.matchMedia('(pointer: coarse)')
 
     let width = 0
     let height = 0
@@ -251,7 +252,7 @@ export default function AnimatedBackground() {
 
     const startAnimation = () => {
       cancelAnimationFrame(frameId)
-      if (reducedMotion.matches || document.hidden) {
+      if (reducedMotion.matches || coarsePointer.matches || document.hidden) {
         drawStatic()
         return
       }
@@ -260,10 +261,13 @@ export default function AnimatedBackground() {
     }
 
     window.addEventListener('resize', resize)
-    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    if (!coarsePointer.matches) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+    }
     document.documentElement.addEventListener('pointerleave', onPointerLeave)
     document.addEventListener('visibilitychange', startAnimation)
     reducedMotion.addEventListener('change', startAnimation)
+    coarsePointer.addEventListener('change', startAnimation)
     resize()
     startAnimation()
 
@@ -274,6 +278,7 @@ export default function AnimatedBackground() {
       document.documentElement.removeEventListener('pointerleave', onPointerLeave)
       document.removeEventListener('visibilitychange', startAnimation)
       reducedMotion.removeEventListener('change', startAnimation)
+      coarsePointer.removeEventListener('change', startAnimation)
     }
   }, [])
 

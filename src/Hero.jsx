@@ -21,6 +21,8 @@ export default function Hero() {
   const portraitStackRef = useRef(null)
 
   const handleHeroPointerMove = (event) => {
+    if (window.matchMedia('(pointer: coarse)').matches) return
+
     const hero = heroRef.current
     const portraitStack = portraitStackRef.current
     if (!hero || !portraitStack) return

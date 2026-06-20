@@ -1567,8 +1567,15 @@ main > section {
 }
 
 @media (pointer: coarse) {
-  .customCursor {
-    display: none;
+  .customCursor,
+  .glass-cursor {
+    display: none !important;
+  }
+
+  body,
+  a,
+  button {
+    cursor: auto;
   }
 }
 
@@ -2939,6 +2946,610 @@ main > section {
 
   .productDetailOverlay--right-bottom {
     right: 36px;
+  }
+}
+
+@media (max-width: 1024px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-width: 0;
+  }
+
+  .section,
+  .heroEditorialPage .siteNav,
+  .heroTopMeta {
+    width: calc(100% - 48px);
+  }
+
+  .sectionHead.split,
+  .aboutGrid {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .metricGrid,
+  .timeline,
+  .strengthGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .projectTwoHero {
+    padding-inline: 28px;
+  }
+
+  .projectTwoProductStage {
+    width: min(94vw, 880px);
+  }
+
+  .projectTwoHeroActions {
+    width: min(780px, 86vw);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    min-width: 0;
+    overflow-x: hidden;
+    background-size: 48px 48px;
+  }
+
+  .ambientCanvas {
+    opacity: 0.42;
+  }
+
+  .siteNav,
+  .heroEditorialPage .siteNav {
+    width: calc(100% - 28px);
+  }
+
+  .heroEditorialPage {
+    min-height: 100svh;
+  }
+
+  .heroBackdrop {
+    inset: -12%;
+    filter: blur(20px) saturate(0.58) brightness(0.42);
+  }
+
+  .heroPortraitStack {
+    top: 0;
+    right: -28%;
+    width: 126vw;
+    height: 100%;
+    opacity: 0.82;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 78%, transparent 100%);
+  }
+
+  .home-hero .home-hero__bottom {
+    transform: scale(1.02);
+  }
+
+  .home-hero .home-hero__front {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .heroEditorialPage .siteNav {
+    min-height: 58px;
+    grid-template-columns: 1fr auto;
+  }
+
+  .heroEditorialPage .siteNav nav {
+    display: none;
+  }
+
+  .heroEditorialPage .brand {
+    gap: 8px;
+  }
+
+  .heroEditorialPage .brand small {
+    display: none;
+  }
+
+  .heroEditorialPage .navContact {
+    font-size: 10px;
+  }
+
+  .heroTopMeta {
+    top: 72px;
+    width: calc(100% - 28px);
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+  }
+
+  .heroTopMeta span:nth-child(2) {
+    display: none;
+  }
+
+  .heroEditorial {
+    right: 18px;
+    bottom: 226px;
+    left: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .heroTitleBlock {
+    padding: 12px 0 14px;
+  }
+
+  .heroEyebrow {
+    font-size: 11px;
+  }
+
+  .heroEditorialPage h1 {
+    max-width: calc(100vw - 36px);
+    font-size: clamp(44px, 15vw, 66px);
+    line-height: 0.94;
+    white-space: normal;
+  }
+
+  .heroEditorialPage h1 small {
+    display: block;
+    margin: 10px 0 0;
+    font-size: 14px;
+    vertical-align: baseline;
+  }
+
+  .heroCounter {
+    display: none;
+  }
+
+  .heroInfoGrid {
+    right: 18px;
+    bottom: 46px;
+    left: 18px;
+    grid-template-columns: 1fr;
+    border-top: 1px solid rgba(255, 244, 232, 0.22);
+  }
+
+  .heroInfoGrid > * {
+    min-height: 44px;
+    padding: 8px 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 244, 232, 0.16);
+  }
+
+  .heroInfoGrid p {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.38;
+  }
+
+  .heroInfoGrid > a {
+    min-height: 42px;
+    padding-right: 0;
+  }
+
+  .heroEditorialPage .scrollCue {
+    display: none;
+  }
+
+  .section {
+    width: calc(100% - 32px);
+    padding: 82px 0;
+    scroll-margin-top: 72px;
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .sectionHead {
+    margin-bottom: 30px;
+  }
+
+  .sectionHead.split {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sectionHead h2,
+  .about .sectionHead h2 {
+    max-width: 100%;
+    font-size: clamp(34px, 10vw, 48px);
+    line-height: 1.08;
+    white-space: normal;
+  }
+
+  .sectionHead p {
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  .aboutGrid,
+  .metricGrid,
+  .timeline,
+  .projectGrid,
+  .strengthGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bioPanel,
+  .portraitPanel,
+  .timeline article,
+  .strengthCard,
+  .projectBody,
+  .contactFrame {
+    padding: 22px;
+  }
+
+  .portraitPanel {
+    min-height: auto;
+  }
+
+  .profileIntroCard {
+    height: 260px;
+  }
+
+  .projectCard {
+    width: 100%;
+  }
+
+  .projectImage {
+    aspect-ratio: 16 / 10;
+  }
+
+  .projectBody {
+    gap: 16px;
+  }
+
+  .projectBody h3 {
+    font-size: 25px;
+  }
+
+  .projectBody > p {
+    font-size: 14px;
+  }
+
+  .sketchCard {
+    flex-basis: min(82vw, 360px);
+  }
+
+  .contactActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .contactActions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .productDetailChrome {
+    width: calc(100% - 32px);
+    min-height: 56px;
+  }
+
+  .productDetailOverlay {
+    width: min(300px, calc(100vw - 40px));
+  }
+
+  .productDetailOverlay--left-top,
+  .productDetailOverlay--left-bottom,
+  .productDetailOverlay--right-bottom {
+    right: auto;
+    left: 20px;
+  }
+
+  .productDetailOverlay--left-top {
+    top: 72px;
+  }
+
+  .productDetailOverlay--left-bottom,
+  .productDetailOverlay--right-bottom {
+    bottom: 58px;
+  }
+
+  .productDetailOverlay h1 {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .productDetailOverlay p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .projectTwoHero {
+    min-height: auto;
+    padding: 24px 18px 46px;
+    overflow: hidden;
+  }
+
+  .projectTwoBackButton {
+    top: 18px;
+    left: 18px;
+    min-height: 34px;
+  }
+
+  .projectTwoHeroTopline {
+    margin-top: 54px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+
+  .projectTwoHeroCopy {
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .projectTwoHero h1 {
+    font-size: clamp(32px, 10vw, 44px);
+    line-height: 1.04;
+    white-space: normal;
+  }
+
+  .projectTwoHeroKicker {
+    flex-wrap: wrap;
+    justify-content: center;
+    letter-spacing: 0.14em;
+  }
+
+  .projectTwoHeroIntro {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .projectTwoShowcase {
+    margin-top: 22px;
+    transform: none;
+  }
+
+  .projectTwoProductStage {
+    width: min(94vw, 560px);
+  }
+
+  .projectTwoHeroActions {
+    width: 100%;
+    margin: 18px auto 0;
+    gap: 14px;
+  }
+
+  .projectTwoFeatureRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .projectTwoFeature {
+    min-height: 46px;
+    justify-content: flex-start;
+    padding: 8px 4px;
+    border-right: 0;
+    border-top: 1px solid rgba(23, 26, 29, 0.12);
+  }
+
+  .projectTwoFeature p {
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: normal;
+  }
+
+  .projectTwoButtonRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .projectTwoButtonRow button,
+  .projectTwoViewButton {
+    width: min(100%, 320px);
+    min-height: 46px;
+  }
+
+  .projectTwoScrollStory--mobile {
+    height: auto !important;
+    min-height: 0;
+    padding: 64px 0 72px;
+  }
+
+  .projectTwoMobilePdfList {
+    display: grid;
+    gap: 34px;
+    width: 100%;
+  }
+
+  .projectTwoMobilePdfPage {
+    display: grid;
+    width: 94vw;
+    margin: 0 auto;
+    gap: 14px;
+  }
+
+  .projectTwoMobilePdfMeta {
+    display: grid;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .projectTwoMobilePdfMeta span,
+  .projectTwoMobilePdfMeta small {
+    color: rgba(23, 26, 29, 0.54);
+    font-size: 10px;
+    font-weight: 640;
+    letter-spacing: 0.16em;
+  }
+
+  .projectTwoMobilePdfMeta strong {
+    color: #17191c;
+    font-size: 13px;
+    font-weight: 360;
+  }
+
+  .projectTwoMobilePdfMeta h2 {
+    margin: 2px 0 0;
+    color: #17191c;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.18;
+  }
+
+  .projectTwoScrollStory--mobile .projectTwoPdfPageImage {
+    width: 100%;
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .projectTwoMotionDemo--mobile {
+    height: auto;
+    min-height: 100svh;
+    margin-top: 0;
+    padding: 64px 0 76px;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionSticky {
+    position: static;
+    display: block;
+    min-height: 0;
+    overflow: visible;
+    padding: 0 18px;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionSticky::before {
+    display: none;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionMeta {
+    position: static;
+    width: min(94vw, 620px);
+    margin: 0 auto 22px;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionMeta small {
+    display: block;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionFrame {
+    pointer-events: auto;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionVideoCrop {
+    width: min(94vw, 620px);
+    max-height: none;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionVideo {
+    object-fit: contain;
+    object-position: center;
+    transform: none;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionProgress {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroEditorialPage .brand span {
+    font-size: 14px;
+  }
+
+  .heroEditorial {
+    bottom: 244px;
+  }
+
+  .heroEditorialPage h1 {
+    font-size: clamp(40px, 16vw, 58px);
+  }
+
+  .heroInfoGrid > * {
+    min-height: 40px;
+  }
+
+  .section {
+    width: calc(100% - 28px);
+    padding: 70px 0;
+  }
+
+  .bioPanel,
+  .portraitPanel,
+  .timeline article,
+  .strengthCard,
+  .projectBody,
+  .contactFrame {
+    padding: 18px;
+  }
+
+  .projectImage {
+    aspect-ratio: 4 / 3;
+  }
+
+  .tagList span {
+    min-height: 28px;
+    font-size: 11px;
+  }
+
+  .productFinalTagline {
+    bottom: 34px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+  }
+
+  .projectTwoHero {
+    padding-inline: 14px;
+  }
+
+  .projectTwoHeroCopy {
+    margin-top: 18px;
+  }
+
+  .projectTwoFeatureRow {
+    grid-template-columns: 1fr;
+  }
+
+  .projectTwoFeature {
+    justify-content: center;
+  }
+
+  .projectTwoMobilePdfPage {
+    width: 92vw;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionSticky {
+    padding-inline: 14px;
+  }
+
+  .projectTwoMotionDemo--mobile .projectTwoMotionMeta,
+  .projectTwoMotionDemo--mobile .projectTwoMotionVideoCrop {
+    width: 92vw;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .projectCard:hover .projectImage img,
+  .projectCard--clickable:hover .projectBody > div:first-child,
+  .projectCard--clickable:hover .projectStoryCta svg {
+    transform: none;
+  }
+
+  .projectCard:hover .projectImage img {
+    filter: none;
+  }
+
+  .projectCard--clickable:hover {
+    border-color: var(--line);
+    background: rgba(20, 18, 16, 0.88);
+    transform: none;
+  }
+
+  .projectTwoFeature:hover span,
+  .projectTwoButtonRow button:hover,
+  .projectTwoViewButton:hover {
+    border-color: rgba(23, 26, 29, 0.22);
+    color: inherit;
+  }
+
+  .projectTwoViewButton:hover {
+    color: #f6f7f5;
+    background: #171a1d;
   }
 }
 

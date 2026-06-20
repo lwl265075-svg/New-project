@@ -18,6 +18,8 @@ export default function CustomCursor() {
 
   useEffect(() => {
     const cursor = cursorRef.current
+    if (window.matchMedia('(pointer: coarse)').matches) return undefined
+
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
     if (!finePointer.matches) return undefined
 
@@ -101,5 +103,5 @@ export default function CustomCursor() {
     }
   }, [])
 
-  return <span ref={cursorRef} className="customCursor" aria-hidden="true" />
+  return <span ref={cursorRef} className="customCursor glass-cursor" aria-hidden="true" />
 }
