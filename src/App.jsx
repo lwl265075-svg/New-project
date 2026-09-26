@@ -2846,7 +2846,7 @@ function About() {
       <div className="aboutGrid">
         <BorderGlow className="aboutGlowFrame" animated>
           <div className="portraitPanel">
-            <img src="/assets/hero-portrait.jpg" alt="蓝炜亮个人肖像" />
+            <img src="/assets/profile-portrait.png" alt="蓝炜亮个人肖像" />
             <div>
               <p>
                 蓝炜亮 <span className="portraitEnglishName">Willy</span>
